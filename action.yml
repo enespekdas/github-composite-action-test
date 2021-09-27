@@ -12,7 +12,7 @@ outputs:
 runs:
   using: "composite"
   steps: 
-    - name: 'podman yukleniyor'
+    - name: 'podman yukleniyorr'
       run: podman --help
       shell: bash
     
