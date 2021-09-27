@@ -12,9 +12,11 @@ outputs:
 runs:
   using: "composite"
   steps: 
-    - run: chmod +x ./CopyFiles.sh
+    
+    - run: ${{ github.action_path }}/ExecuteSomething.sh
       shell: bash
-    - run: chmod +x ./ExecuteSomething.sh
+    - id: random-number-generator
+      run: echo "::set-output name=filesNo::$(echo $RANDOM)"
       shell: bash
-    - run: echo " SA ben enes "
+    - run: ${{ github.action_path }}/CopyFiles.sh
       shell: bash
