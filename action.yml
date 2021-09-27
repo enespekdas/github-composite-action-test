@@ -1,18 +1,56 @@
-name: 'File Copy'
-description: 'Pretends to copy some files and return the number of files copied'
+name: 'Docker File is Getting Ready'
+description: 'Docker file will be created image from buildah , image will be send docker.hub repository . After image will pull machine and run.'
 inputs:
-  destinationFolder:  # path
-    description: 'The folder to copy the files to'
+  USERNAME:  # path
+    description: 'Dockerhub username '
     required: true
-    default: '~'
+    default: 'username'
+  PASSWORD:  # path
+    description: 'Dockerhub password '
+    required: true
+    default: 'passwd'
+  IMAGE_NAME:  # path
+    description: 'image name to be created'
+    required: true
+    default: 'buildah-action'
+  Repository_Project_Tag:  # path
+    description: 'Repository project name  (action-test) '
+    required: true
+    default: 'repo-project-name'
+  Repository_Project_version:  # path
+    description: 'Repository project name (v1) '
+    required: true
+    default: 'latest'
 outputs:
-  copied-files: 
-    description: "Number of files copied"
-    value: "test"
+  Result: 
+    description: "Build step results"
+    value: "Build steps  finished"
 runs:
   using: "composite"
   steps: 
-    - name: 'podman yukleniyorr'
-      run: podman --help
+    - name: Repository Files are downloading
+      uses: actions/checkout@v2
+    - run: pwd 
       shell: bash
-    
+    - run: ls
+      shell: bash
+    - name: Buildah is building DockerFile
+      run: sudo buildah bud -t ${{ inputs.IMAGE_NAME }}
+      shell: bash
+    - name: Image Control
+      run: sudo buildah images
+      shell: bash
+    - name: Image Push Dockerhub
+      run: sudo buildah push --creds ${{ inputs.USERNAME }}:${{ inputs.PASSWORD }} ${{ inputs.IMAGE_NAME }}:${{ inputs.Repository_Project_version }}  ${{ inputs.USERNAME }}/${{ inputs.Repository_Project_Tag }}:${{ inputs.Repository_Project_version }}
+      shell: bash
+    - name: Image Pull Machine
+      run: sudo buildah pull ${{ inputs.USERNAME }}/${{ inputs.Repository_Project_Tag }}:${{ inputs.Repository_Project_version }}
+      shell: bash
+    - name: Image Run 
+      run: sudo  podman run -it ${{ inputs.USERNAME }}/${{ inputs.Repository_Project_Tag }}:${{ inputs.Repository_Project_version }}
+      shell: bash
+    - name: Image Control
+      run: sudo podman ps -a
+      shell: bash
+    - run: echo " Hi , Finished"
+      shell: bash
