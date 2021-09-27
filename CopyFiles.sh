@@ -1,3 +1,3 @@
-echo "Copying files... Hang on"
+echo "Copying filesss... Hang on"
 
 echo "Done"
